@@ -13,7 +13,7 @@ const io = new Server(server, {
     },
 });
 
-const PORT = process.env.PORT || 80080;
+const PORT = process.env.PORT || 8080;
 
 //어떤 방에 유저가 있는지
 let users = {};
