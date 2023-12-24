@@ -1,3 +1,3 @@
 const { useState } = require("react");
 
-const [pc, setPc] = useState
+const [pc, setPc] = useState<RTCPeerConnection>();
