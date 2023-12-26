@@ -11,6 +11,43 @@ const VideoCall = () => {
     // 방으로 진입하면 해당 방 번호를 url parameter로 전달
     const {roomName} = useParams();
 
+    const getMedia = async() => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: true,
+            });
+            if (myVideoRef.current) {
+                myVideoRef.current.surObject = stream;
+            }
+    
+            stream.getTracks().forEach((track) => {
+                if (!peerRef.current) {
+                    return;
+                }
+                peerRef.surObject.addTrack(track, stream);
+            });
+    
+            peerRef.current.onicecandidate = (e) => {
+                if (e.candidate) {
+                    if (!socketRef.current) {
+                        return;
+                    }
+                    console.log("recv candidate");
+                    socketRef.current.emit("candidate", e.candidate, roomName);
+                }
+            };
+    
+            peerRef.current.ontrack = (e) => {
+                if (remoteVideoRef.current) {
+                    remoteVideoRef.current.scrObject = e.stream[0];
+                }
+            };
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
     useEffect(() => {   
         socketRef.current = io("localhost:3000");               //소켓 연결
         peerRef.current = new RTCPeerConnection({
@@ -29,5 +66,4 @@ const VideoCall = () => {
         </div>
     );
 };
-
 export default VideoCall;
