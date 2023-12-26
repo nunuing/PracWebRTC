@@ -48,6 +48,25 @@ const VideoCall = () => {
         }
     };
 
+    const createOffer = async () => {
+        console.log("create Offer");
+        if (!(peerRef.current && socketRef.current)) {
+            return;
+        }
+        
+      try {
+        //offer 생성
+        const sdp = await peerRef.current.createOffer();
+        peerRef.current.setLocalDescription(sdp);
+        console.log("sent the offer");
+        //offer 전달
+        socketRef.current.emit("offer", sdp, roomName);
+        }
+        catch(e) {
+            console.log(e);
+        }
+    };
+
     useEffect(() => {   
         socketRef.current = io("localhost:3000");               //소켓 연결
         peerRef.current = new RTCPeerConnection({
