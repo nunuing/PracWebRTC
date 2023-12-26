@@ -67,6 +67,26 @@ const VideoCall = () => {
         }
     };
 
+    const creatAnswer = async(sdp) => {
+        console.log("create Answer");
+        if (!(peerRef.current && socketRef.current)) {
+            return;
+        }
+
+        try {
+            peerRef.current.setRemoteDescription(sdp);
+
+            const answerSdp = await peerRef.current.creatAnswer();
+
+            peerRef.current.setLocalDescription(answerSdp);
+            console.log("sent ther answer");
+            socketRef.current.emit("answer", answerSdp, roomName);
+        }
+        catch (e) {
+            console.log(e);
+        }
+    };
+
     useEffect(() => {   
         socketRef.current = io("localhost:3000");               //소켓 연결
         peerRef.current = new RTCPeerConnection({
